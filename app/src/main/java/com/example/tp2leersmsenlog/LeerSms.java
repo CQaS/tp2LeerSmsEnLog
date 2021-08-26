@@ -15,25 +15,29 @@ import java.util.Date;
 
 public class LeerSms extends Service
 {
+	Uri sms;
+    ContentResolver conRe;
+	
+	public LeerSms()
+    {
+
+    }
+	
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        final Uri sms = Telephony.Sms.CONTENT_URI;
-        final ContentResolver conRe = getContentResolver();
+        //sms = Uri.parse("content://sms/inbox");
+        //conRe = getContentResolver();
 
-        Runnable ver = new Runnable()
-        {
-            @Override
-            public void run()
-            {
+
                 while (true)
                 {
-                    Cursor cr = conRe.query(sms, null, null, null, null);
+                    //Cursor cr = conRe.query(sms, null, null, null, null);
+					Cursor cr = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
 
                     if(cr.getCount() > 0)
                     {
-                        int i = 0;
-                        while (cr.moveToNext() && i<5)
+                        while (cr.moveToNext() && cr.getPosition() < 5)
                         {
                             String num = cr.getString(cr.getColumnIndex(Telephony.Sms.Inbox.ADDRESS));
                             Date date = new Date(Long.parseLong(cr.getString(cr.getColumnIndex(Telephony.Sms.Inbox.DATE))));
@@ -41,26 +45,27 @@ public class LeerSms extends Service
 
                             Log.d("salida", "Nro: " +num+ ". Fecha: " +date+ ". SMS: "+lectura);
                         }
+
+                        cr.close();
+
                         try
                         {
                             Thread.sleep(9000);
                         }
                         catch(InterruptedException e)
                         {
-                            Log.e("Error",e.getMessage());
+                            Log.e("Error", e.getMessage());
 
                         }
 
                     }
+                    else
+                    {
+                        Log.d("salida", "No hay mensajes");
+                    }
                 }
 
-            }
-        };
 
-        Thread leerMensajes = new Thread(ver);
-        leerMensajes.start();
-
-        return START_STICKY;
     }
 
     @Nullable

@@ -24,22 +24,14 @@ public class MainActivity extends AppCompatActivity
         {
             requestPermissions(new String[]{Manifest.permission.READ_SMS},1000);
         }
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-
-        service = new Intent(this, LeerSms.class);
+		
+		service = new Intent(this, LeerSms.class);
         startService(service);
     }
-
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-
-        stopService(service);
+	
+	@Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(i);
     }
 }

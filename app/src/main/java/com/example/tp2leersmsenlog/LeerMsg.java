@@ -27,9 +27,9 @@ public class LeerMsg extends Service
             {
                 while (cr.moveToNext() && cr.getPosition() < 5)
                 {
-                    String num = cr.getString(cr.getColumnIndex(Telephony.Sms.Inbox.ADDRESS));
-                    Date date = new Date(Long.parseLong(cr.getString(cr.getColumnIndex(Telephony.Sms.Inbox.DATE))));
-                    String lectura = cr.getString(cr.getColumnIndex(Telephony.Sms.Inbox.BODY));
+                    String num = cr.getString(cr.getColumnIndex(Telephony.Sms.ADDRESS));
+                    Date date = new Date(Long.parseLong(cr.getString(cr.getColumnIndex(Telephony.Sms.DATE))));
+                    String lectura = cr.getString(cr.getColumnIndex(Telephony.Sms.BODY));
 
                     Log.d("salida", "Nro: " +num+ ". Fecha: " +date+ ". SMS: "+lectura);
                 }
@@ -43,7 +43,7 @@ public class LeerMsg extends Service
                 catch(InterruptedException e)
                 {
                     Log.e("Error", e.getMessage());
-
+                    break;
                 }
 
             }
@@ -52,6 +52,7 @@ public class LeerMsg extends Service
                 Log.d("salida", "No hay mensajes");
             }
         }
+        return START_STICKY;
     }
 
     @Override

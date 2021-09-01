@@ -18,40 +18,50 @@ public class LeerMsg extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        while (true)
+        Runnable Leer = new Runnable()
         {
-            //Cursor cr = conRe.query(sms, null, null, null, null);
-            Cursor cr = getContentResolver().query(Uri.parse("content://sms"), null, null, null, null);
-
-            if(cr.getCount() > 0)
+            @Override
+            public void run()
             {
-                while (cr.moveToNext() && cr.getPosition() < 5)
+                while (true)
                 {
-                    String num = cr.getString(cr.getColumnIndex(Telephony.Sms.ADDRESS));
-                    Date date = new Date(Long.parseLong(cr.getString(cr.getColumnIndex(Telephony.Sms.DATE))));
-                    String lectura = cr.getString(cr.getColumnIndex(Telephony.Sms.BODY));
+                    //Cursor cr = conRe.query(sms, null, null, null, null);
+                    Cursor cr = getContentResolver().query(Uri.parse("content://sms"), null, null, null, null);
 
-                    Log.d("salida", "Nro: " +num+ ". Fecha: " +date+ ". SMS: "+lectura);
+                    if(cr.getCount() > 0)
+                    {
+                        while (cr.moveToNext() && cr.getPosition() < 5)
+                        {
+                            String num = cr.getString(cr.getColumnIndex(Telephony.Sms.ADDRESS));
+                            Date date = new Date(Long.parseLong(cr.getString(cr.getColumnIndex(Telephony.Sms.DATE))));
+                            String lectura = cr.getString(cr.getColumnIndex(Telephony.Sms.BODY));
+
+                            Log.d("salida", "Nro: " +num+ ". Fecha: " +date+ ". SMS: "+lectura);
+                        }
+
+                        cr.close();
+
+                        try
+                        {
+                            Thread.sleep(9000);
+                        }
+                        catch(InterruptedException e)
+                        {
+                            Log.e("Error", e.getMessage());
+                            break;
+                        }
+
+                    }
+                    else
+                    {
+                        Log.d("salida", "No hay mensajes");
+                    }
                 }
-
-                cr.close();
-
-                try
-                {
-                    Thread.sleep(9000);
-                }
-                catch(InterruptedException e)
-                {
-                    Log.e("Error", e.getMessage());
-                    break;
-                }
-
             }
-            else
-            {
-                Log.d("salida", "No hay mensajes");
-            }
-        }
+        };
+
+        Thread trabajador= new Thread(Leer);
+        trabajador.start();
         return START_STICKY;
     }
 
